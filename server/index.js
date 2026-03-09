@@ -5,8 +5,13 @@ import dotenv from 'dotenv';
 import { v2 as cloudinary } from 'cloudinary';
 import multer from 'multer';
 import { CloudinaryStorage } from 'multer-storage-cloudinary';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
 dotenv.config();
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 const prisma = new PrismaClient();
@@ -74,7 +79,6 @@ app.post('/api/upload', upload.single('file'), async (req, res) => {
     const url = req.file.path;
     const { contentId } = req.body;
 
-    // Зберігаємо URL в базу якщо переданий contentId
     if (contentId) {
       await prisma.content.upsert({
         where: { id: contentId },
@@ -97,15 +101,21 @@ app.get('/api/media', async (req, res) => {
       cloudinary.api.resources({ type: 'upload', prefix: 'gaiia', resource_type: 'image', max_results: 50 }),
       cloudinary.api.resources({ type: 'upload', prefix: 'gaiia', resource_type: 'video', max_results: 50 }),
     ]);
-    res.json({
-      images: images.resources,
-      videos: videos.resources,
-    });
+    res.json({ images: images.resources, videos: videos.resources });
   } catch (err) {
     console.error('Media list error:', err);
     res.status(500).json({ error: 'Failed to fetch media' });
   }
 });
 
-const PORT = 3001;
-app.listen(PORT, () => console.log(`Backend server running on port ${PORT}`));
+// --- РОЗДАЧА REACT FRONTEND (dist папка після npm run build) ---
+const distPath = path.join(__dirname, '..', 'dist');
+app.use(express.static(distPath));
+
+// SPA fallback — всі маршрути (/admin тощо) повертають index.html
+app.get('*', (req, res) => {
+  res.sendFile(path.join(distPath, 'index.html'));
+});
+
+const PORT = process.env.PORT || 3001;
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
