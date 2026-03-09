@@ -5,7 +5,7 @@ import {
   Image, Film, Upload, Copy, Type, Link, FileText, Globe, Lock, Eye, EyeOff
 } from 'lucide-react';
 
-const API = 'http://localhost:3001';
+const API = '';
 const ADMIN_PASSWORD = '123456';
 
 // ─────────────────────────────────────────────

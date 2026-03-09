@@ -30,7 +30,7 @@ const PetitionModal = ({ isOpen, onClose }) => {
     const email = emailRef.current.value.trim();
 
     try {
-      const response = await fetch('http://localhost:3001/api/petitions', {
+      const response = await fetch('/api/petitions', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ firstName, lastName, email })

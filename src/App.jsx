@@ -25,7 +25,7 @@ const useContent = () => {
   const [content, setContent] = useState({});
 
   useEffect(() => {
-    fetch('http://localhost:3001/api/content')
+    fetch('/api/content')
       .then(r => r.json())
       .then(data => {
         const obj = {};
