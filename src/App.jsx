@@ -4,7 +4,7 @@ import { Wind, Zap, Clock, Feather, Building2, Check } from 'lucide-react';
 
 import happeningBg from './assets/happening_bg.png';
 import unLogo from './assets/un_logo.png';
-import damageMap from './assets/damage_map.png';
+import damageMap from './assets/damage_map.mov';
 import petitionAboutImage from './assets/petition-about-image.jpg';
 import petitionAboutVideo from './assets/petition-about-video.mp4';
 import discordIcon from './assets/discord-icon.png';
@@ -15,6 +15,11 @@ import maskWomanVideo from './assets/mask-woman-video.mp4';
 import smogCityVideo from './assets/smog-city-video.mp4';
 import familyMaskVideo from './assets/family-mask-video.mp4';
 import earthVideo from './assets/earth-video.mp4';
+
+import openPetitionLogo from './assets/open-petition.svg';
+import avaazLogo        from './assets/avaaz.svg';
+import changeOrgLogo    from './assets/change-org.svg';
+import goPetitionLogo   from './assets/gopetition.svg';
 
 import PetitionModal from './PetitionModal';
 
@@ -169,13 +174,15 @@ const Hero = ({ c, media }) => {
   );
 };
 
+// ─── ЗМІНА 1: BREATHING на новому рядку ───
 const FutureSection = ({ c, media }) => (
   <section className="relative w-full h-auto md:h-[800px] bg-black overflow-hidden py-16 md:py-0">
     <div className="relative w-full h-full max-w-[1440px] mx-auto flex flex-col md:block px-6 md:px-0">
       <div className="relative md:absolute md:left-[162px] md:top-1/2 md:-translate-y-1/2 z-20 flex flex-col items-start gap-[24px] md:gap-[40px] w-full max-w-[370px] md:max-w-none mx-auto md:mx-0 text-left">
         <FadeIn direction="right">
           <h2 className="text-[32px] md:text-[56px] font-black text-[#F6CFCD] uppercase leading-[1.1] tracking-[-0.04em]">
-            {c('future_title', 'THE FUTURE OF BREATHING')}
+            {c('future_title_line1', 'THE FUTURE OF')}<br />
+            {c('future_title_line2', 'BREATHING')}
           </h2>
         </FadeIn>
         <div className="flex flex-col md:flex-row items-start gap-6 md:gap-[24px] mt-2 md:mt-0 w-full">
@@ -225,6 +232,14 @@ const HappeningNow = ({ c, media }) => (
   </section>
 );
 
+// ─── ЗМІНА 2: Логотипи платформ під підзаголовком ───
+const PETITION_PARTNERS = [
+  { img: openPetitionLogo, text: 'OPENPETITION.EU', url: 'https://www.openpetition.eu/petition/online/petition-to-the-united-nations-make-clean-air-a-universal-human-right' },
+  { img: avaazLogo,        text: 'SECURE.AVAAZ.ORG', url: 'https://secure.avaaz.org/community_petitions/en/united_nations_petition_to_the_united_nations_make_clean_air_a_universal_human_right/' },
+  { img: changeOrgLogo,    text: 'CHANGE.ORG',        url: 'https://www.change.org/p/petition-to-the-united-nations-make-clean-air-a-universal-human-right' },
+  { img: goPetitionLogo,   text: 'GOPETITION.COM',    url: 'https://gopetition.com/petitions/petition-to-the-united-nations-make-clean-air-a-universal-human-right.html' },
+];
+
 const UNGoalSection = ({ c, media }) => (
   <section className="w-full bg-[#F4F8FF] pt-12 md:pt-24 pb-8 flex flex-col items-center justify-center">
     <div className="w-full max-w-[1344px] flex flex-col items-center px-4 lg:px-0">
@@ -241,11 +256,36 @@ const UNGoalSection = ({ c, media }) => (
           <h2 className="text-[28px] md:text-[38px] lg:text-[44px] font-black text-[#2B3547] uppercase leading-[1.2] tracking-[-0.02em] text-center w-full">
             {c('un_title', 'WE CALL ON THE UNITED NATIONS TO RECOGNIZE CLEAN AIR AS A HUMAN RIGHT')}
           </h2>
-          <p className="text-[#576680] text-[15px] font-normal leading-[1.4] text-center mt-4 mb-8">
+          <p className="text-[#576680] text-[15px] font-normal leading-[1.4] text-center mt-4 mb-6">
             {c('un_sub', 'Not symbolic. Enforceable. Measurable.')}
           </p>
         </FadeIn>
+
+        {/* ── ЛОГОТИПИ ПЛАТФОРМ ── */}
+        <FadeIn delay={0.1} className="w-full">
+          <div className="flex flex-row flex-wrap items-center justify-center gap-x-[40px] gap-y-[20px] mb-10 w-full">
+            {PETITION_PARTNERS.map((p) => (
+              <a
+                key={p.text}
+                href={p.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex flex-col items-center gap-[6px] group hover:scale-105 transition-transform duration-200"
+              >
+                <img
+                  src={p.img}
+                  alt={p.text}
+                  className="h-[28px] object-contain opacity-50 grayscale group-hover:opacity-100 group-hover:grayscale-0 transition-all duration-300"
+                />
+                <span className="text-[9px] font-bold text-[#576680] uppercase tracking-wider group-hover:text-[#306CE5] transition-colors duration-200">
+                  {p.text}
+                </span>
+              </a>
+            ))}
+          </div>
+        </FadeIn>
       </div>
+
       <div className="flex flex-col lg:flex-row gap-[24px] w-full items-center justify-center mb-12">
         {[
           { vk: 'asset_mask_woman_video', vf: maskWomanVideo, nk: 'un_card1_num', nd: '7 MILLION', tk: 'un_card1_text', td: "DEATHS EVERY YEAR — THAT'S 13 PEOPLE DYING EVERY MINUTE FROM SOMETHING AS BASIC AS BREATHING", d: 0.15 },
@@ -345,7 +385,7 @@ const DamageSection = ({ c, media }) => (
     <div className="w-full max-w-[1116px] flex flex-col lg:flex-row items-center justify-between px-4 lg:px-0 gap-[32px] lg:gap-0">
       <div className="w-full max-w-[370px] lg:max-w-none h-[480px] lg:w-[432px] lg:h-[600px] rounded-[4px] overflow-hidden order-1 lg:order-2">
         <FadeIn direction="left" className="w-full h-full">
-          <img src={media('asset_damage_map', damageMap)} alt="Pollution Map" className="w-full h-full object-cover hover:scale-105 transition-transform duration-700" />
+          <OptimizedVideo src={media('asset_damage_map', damageMap)} className="w-full h-full object-cover hover:scale-105 transition-transform duration-700" />
         </FadeIn>
       </div>
       <div className="flex flex-col items-center lg:items-start gap-[24px] lg:gap-[40px] w-full max-w-[370px] lg:max-w-[545px] order-2 lg:order-1 text-center lg:text-left">
@@ -441,8 +481,6 @@ export default function App() {
   const footerRef = useRef(null);
   const [isBlueTheme, setIsBlueTheme] = useState(false);
 
-  // ── КЛЮЧОВЕ ВИПРАВЛЕННЯ ──
-  // useScroll має бути завжди — НЕ всередині умови
   const { scrollY, scrollYProgress } = useScroll({
     target: lightSectionRef,
     offset: ["start end", "start start"]
@@ -484,7 +522,6 @@ export default function App() {
       <FutureSection c={c} media={media} />
       <HappeningNow c={c} media={media} />
 
-      {/* ── АНІМОВАНИЙ ПЕРЕХІД З ТЕМНОЇ НА БІЛУ ── */}
       <div className="w-full bg-[#1B1818]">
         <motion.div
           ref={lightSectionRef}
@@ -506,7 +543,6 @@ export default function App() {
         </motion.div>
       </div>
 
-      {/* ── ФІКСОВАНА ПАНЕЛЬ ВНИЗУ ── */}
       <motion.div
         className="fixed bottom-[24px] left-1/2 -translate-x-1/2 z-50 w-[370px] md:w-[593px] h-[173px] md:h-[72px] pointer-events-none flex justify-center items-center scale-90 md:scale-100 origin-bottom"
         style={{ y: panelY }}

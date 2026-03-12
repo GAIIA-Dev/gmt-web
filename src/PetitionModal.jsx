@@ -3,13 +3,14 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, Check } from 'lucide-react';
 
 import unLogo from './assets/un_logo.png';
-import modalBg from './assets/modal_bg.jpg';
+import modalBg from './assets/petition-about-image.jpg';
 import discordIcon from './assets/discord.png';
 import whatsappIcon from './assets/whatsapp.png';
-import openPetitionLogo from './assets/open-petition.png';
-import avaazLogo from './assets/avaaz.png';
-import changeOrgLogo from './assets/change-org.png';
-import goPetitionLogo from './assets/gopetition.png';
+import openPetitionLogo from './assets/open-petition.svg';
+import avaazLogo from './assets/avaaz.svg';
+import changeOrgLogo from './assets/change-org.svg';
+import goPetitionLogo from './assets/gopetition.svg';
+import petitionPdf from './assets/Petition.pdf';
 
 const PetitionModal = ({ isOpen, onClose }) => {
   const [isSigned, setIsSigned] = useState(false);
@@ -55,6 +56,10 @@ const PetitionModal = ({ isOpen, onClose }) => {
     }, 300);
   };
 
+  const handleDownloadPdf = () => {
+    window.open(petitionPdf, '_blank');
+  };
+
   const overlayVariants = {
     hidden: { opacity: 0 },
     visible: { opacity: 1 },
@@ -63,11 +68,11 @@ const PetitionModal = ({ isOpen, onClose }) => {
 
   const modalVariants = {
     hidden: { scale: 0.9, opacity: 0, y: 20 },
-    visible: { 
-      scale: 1, 
-      opacity: 1, 
+    visible: {
+      scale: 1,
+      opacity: 1,
       y: 0,
-      transition: { type: "spring", damping: 25, stiffness: 300 } 
+      transition: { type: "spring", damping: 25, stiffness: 300 }
     },
     exit: { scale: 0.9, opacity: 0, y: 20, transition: { duration: 0.2 } }
   };
@@ -88,8 +93,8 @@ const PetitionModal = ({ isOpen, onClose }) => {
             onClick={(e) => e.stopPropagation()}
             className="w-full max-w-[1000px] max-h-[90vh] bg-[#F4F8FF] rounded-[24px] shadow-2xl overflow-y-auto flex flex-col items-center p-[20px] lg:p-[40px] relative"
           >
-            
-            <button 
+
+            <button
               onClick={handleClose}
               className="absolute right-6 top-6 w-[32px] h-[32px] bg-[#2B3547] rounded-full flex justify-center items-center text-white hover:scale-110 shadow-md transition-all z-50"
             >
@@ -97,7 +102,7 @@ const PetitionModal = ({ isOpen, onClose }) => {
             </button>
 
             <div className="w-full max-w-[936px] flex flex-col gap-[24px]">
-              
+
               {/* ХЕДЕР */}
               <div className="flex flex-col lg:flex-row justify-center lg:items-center w-full gap-[16px]">
                 <div className="flex flex-row items-center justify-center gap-[16px] w-full max-w-[726px]">
@@ -110,7 +115,7 @@ const PetitionModal = ({ isOpen, onClose }) => {
 
               {/* ГОЛОВНИЙ БЛОК */}
               <div className="flex flex-col lg:flex-row gap-[16px] w-full">
-                
+
                 {/* Картка 1: Форма / Успіх */}
                 <div className="order-1 lg:order-2 w-full lg:w-[380px] h-[440px] bg-[#101112] rounded-[16px] p-[20px] flex flex-col relative overflow-hidden shadow-xl">
                   <AnimatePresence mode="wait">
@@ -175,15 +180,19 @@ const PetitionModal = ({ isOpen, onClose }) => {
                   </AnimatePresence>
                 </div>
 
-                {/* Картка 2: Картинка */}
+                {/* Картка 2: Картинка + PDF кнопка */}
                 <div className="order-2 lg:order-1 relative w-full lg:flex-1 h-[320px] lg:h-[440px] rounded-[16px] overflow-hidden flex flex-col justify-end p-[24px] shadow-xl">
                   <img src={modalBg} alt="BG" className="absolute inset-0 w-full h-full object-cover" />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
                   <div className="relative z-10">
                     <p className="text-white text-[16px] mb-4 leading-snug">The UN must affirm clean air as a fundamental human right, equal to life and health.</p>
-                    <button className="w-full h-[52px] bg-white/10 backdrop-blur-md border border-white/20 rounded-[14px] text-white text-[12px] font-bold uppercase hover:bg-white/20 transition-all">
+                    <motion.button
+                      whileTap={{ scale: 0.97 }}
+                      onClick={handleDownloadPdf}
+                      className="w-full h-[52px] bg-white/10 backdrop-blur-md border border-white/20 rounded-[14px] text-white text-[12px] font-bold uppercase hover:bg-white/20 transition-all"
+                    >
                       DOWNLOAD PETITION (PDF)
-                    </button>
+                    </motion.button>
                   </div>
                 </div>
 
@@ -202,7 +211,7 @@ const PetitionModal = ({ isOpen, onClose }) => {
                 </div>
               </div>
 
-              {/* ФУТЕР */}
+              {/* ФУТЕР — логотипи платформ */}
               <div className="grid grid-cols-2 lg:flex lg:flex-row justify-items-center justify-center items-center gap-y-[28px] gap-x-[16px] lg:gap-[40px] w-full mt-6 lg:mt-8">
                 {[
                   { img: openPetitionLogo, text: 'OPENPETITION.EU', url: 'https://www.openpetition.eu/petition/online/petition-to-the-united-nations-make-clean-air-a-universal-human-right' },
