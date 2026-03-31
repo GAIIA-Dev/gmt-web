@@ -550,6 +550,8 @@ const MediaManager = () => {
 // ─────────────────────────────────────────────
 // PETITIONS TAB
 // ─────────────────────────────────────────────
+// PETITIONS TAB
+// ─────────────────────────────────────────────
 const PetitionsTab = () => {
   const [petitions, setPetitions] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -570,13 +572,18 @@ const PetitionsTab = () => {
   const filtered = petitions
     .filter(p => {
       const q = search.toLowerCase();
-      return p.firstName?.toLowerCase().includes(q) || p.lastName?.toLowerCase().includes(q) || p.email?.toLowerCase().includes(q);
+      return (
+        p.firstName?.toLowerCase().includes(q) || 
+        p.lastName?.toLowerCase().includes(q) || 
+        p.email?.toLowerCase().includes(q) ||
+        p.country?.toLowerCase().includes(q) // Додали пошук по країні
+      );
     })
     .sort((a, b) => sortOrder === 'desc' ? new Date(b.createdAt) - new Date(a.createdAt) : new Date(a.createdAt) - new Date(b.createdAt));
 
   const exportCSV = () => {
-    const header = 'ID,First Name,Last Name,Email,Date\n';
-    const rows = petitions.map(p => `${p.id},"${p.firstName}","${p.lastName}","${p.email}","${new Date(p.createdAt).toLocaleString()}"`).join('\n');
+    const header = 'ID,First Name,Last Name,Email,Country,Date\n'; // Додали Country в шапку CSV
+    const rows = petitions.map(p => `${p.id},"${p.firstName}","${p.lastName}","${p.email}","${p.country || ''}","${new Date(p.createdAt).toLocaleString()}"`).join('\n');
     const blob = new Blob([header + rows], { type: 'text/csv' });
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
@@ -594,6 +601,7 @@ const PetitionsTab = () => {
 
   return (
     <>
+      {/* Статистика */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
         {[
           { icon: <Users size={20} />, label: 'Total Signatures', value: petitions.length, color: 'from-[#306CE5] to-[#4D85F7]' },
@@ -611,6 +619,7 @@ const PetitionsTab = () => {
       </div>
 
       <div className="bg-[#13161B] border border-white/5 rounded-2xl overflow-hidden">
+        {/* Панель керування (Пошук, фільтри, CSV) */}
         <div className="px-6 py-4 border-b border-white/5 flex flex-col sm:flex-row gap-3 items-start sm:items-center justify-between">
           <div>
             <h2 className="text-[13px] font-black uppercase tracking-tight">Signatures</h2>
@@ -635,11 +644,13 @@ const PetitionsTab = () => {
           </div>
         </div>
 
+        {/* ТАБЛИЦЯ */}
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
               <tr className="border-b border-white/5">
-                {['#', 'Name', 'Email', 'Date & Time'].map(h => (
+                {/* Додали колонку Country в заголовок таблиці */}
+                {['#', 'Name', 'Email', 'Country', 'Date & Time'].map(h => (
                   <th key={h} className="text-left px-6 py-3 text-[9px] font-bold uppercase tracking-widest text-white/20">{h}</th>
                 ))}
               </tr>
@@ -648,13 +659,14 @@ const PetitionsTab = () => {
               {loading ? (
                 [...Array(5)].map((_, i) => (
                   <tr key={i} className="border-b border-white/3">
-                    {[...Array(4)].map((_, j) => (
+                    {/* Збільшили кількість скелетонів до 5, бо колонок тепер 5 */}
+                    {[...Array(5)].map((_, j) => (
                       <td key={j} className="px-6 py-4"><div className="h-3 bg-white/5 rounded animate-pulse" style={{ width: `${50 + Math.random() * 40}%` }} /></td>
                     ))}
                   </tr>
                 ))
               ) : filtered.length === 0 ? (
-                <tr><td colSpan={4} className="px-6 py-16 text-center text-white/15 text-[11px] uppercase tracking-widest">No signatures found</td></tr>
+                <tr><td colSpan={5} className="px-6 py-16 text-center text-white/15 text-[11px] uppercase tracking-widest">No signatures found</td></tr>
               ) : (
                 filtered.map(p => (
                   <tr key={p.id} className="border-b border-white/3 hover:bg-white/2 transition-colors">
@@ -668,6 +680,14 @@ const PetitionsTab = () => {
                       </div>
                     </td>
                     <td className="px-6 py-4"><span className="text-[11px] text-white/50 font-mono">{p.email}</span></td>
+                    
+                    {/* ВІДОБРАЖЕННЯ КРАЇНИ */}
+                    <td className="px-6 py-4">
+                      <span className="text-[11px] text-[#A78BFA] font-medium bg-[#A78BFA]/10 px-2 py-1 rounded-md">
+                        {p.country || '—'}
+                      </span>
+                    </td>
+
                     <td className="px-6 py-4"><span className="text-[10px] text-white/30 font-mono">{formatDate(p.createdAt)}</span></td>
                   </tr>
                 ))
@@ -686,7 +706,6 @@ const PetitionsTab = () => {
     </>
   );
 };
-
 // ─────────────────────────────────────────────
 // MAIN ADMIN
 // ─────────────────────────────────────────────
