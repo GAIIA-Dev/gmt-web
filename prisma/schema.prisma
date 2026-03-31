@@ -12,6 +12,8 @@ model Petition {
   firstName String
   lastName  String
   email     String
+  country   String?  // <--- ПРОСТО ДОДАЙТЕ ЦЕЙ РЯДОК
+
   createdAt DateTime @default(now())
 }
 
