@@ -75,8 +75,8 @@ app.post('/api/petitions', async (req, res) => {
 
     // 3. Зберігаємо у вашу базу даних (Prisma)
     const result = await prisma.petition.create({
-      data: { firstName, lastName, email }
-    });
+  data: { firstName, lastName, email, country }
+});
 
     // 4. Відправляємо дані в BEEHIIV (з країною)
     const BEEHIIV_API_KEY = process.env.BEEHIIV_API_KEY;
