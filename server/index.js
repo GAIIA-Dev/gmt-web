@@ -16,6 +16,9 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const prisma = new PrismaClient();
 
+// Налаштування для Railway, щоб правильно бачити IP користувача
+app.set('trust proxy', true);
+
 // Cloudinary config
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -49,10 +52,77 @@ app.get('/api/petitions', async (req, res) => {
 
 app.post('/api/petitions', async (req, res) => {
   const { firstName, lastName, email } = req.body;
-  const result = await prisma.petition.create({
-    data: { firstName, lastName, email }
-  });
-  res.json(result);
+
+  try {
+    // 1. Отримуємо IP юзера
+    let ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+    if (ip && ip.includes(',')) ip = ip.split(',')[0];
+    if (ip === '::1' || ip === '127.0.0.1') ip = ''; 
+
+    // 2. Визначаємо країну по IP
+    let country = 'Unknown';
+    try {
+      if (ip) {
+        const geoRes = await fetch(`http://ip-api.com/json/${ip}`);
+        const geoData = await geoRes.json();
+        if (geoData.status === 'success') {
+          country = geoData.country; // Отримаємо щось типу "Ukraine", "United States"
+        }
+      }
+    } catch (err) {
+      console.log('Помилка визначення локації:', err.message);
+    }
+
+    // 3. Зберігаємо у вашу базу даних (Prisma)
+    const result = await prisma.petition.create({
+      data: { firstName, lastName, email }
+    });
+
+    // 4. Відправляємо дані в BEEHIIV (з країною)
+    const BEEHIIV_API_KEY = process.env.BEEHIIV_API_KEY;
+    const BEEHIIV_PUB_ID = process.env.BEEHIIV_PUB_ID;
+
+    if (BEEHIIV_API_KEY && BEEHIIV_PUB_ID) {
+      const beehiivPayload = {
+        email: email,
+        reactivate_existing: false,
+        send_welcome_email: false,
+        custom_fields: [
+          { name: "First Name", value: firstName },
+          { name: "Last Name", value: lastName },
+          { name: "Country", value: country } // Передаємо країну!
+        ]
+      };
+
+      try {
+        const beehiivResponse = await fetch(`https://api.beehiiv.com/v2/publications/${BEEHIIV_PUB_ID}/subscriptions`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${BEEHIIV_API_KEY}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(beehiivPayload)
+        });
+
+        if (!beehiivResponse.ok) {
+          console.error('Помилка відправки в Beehiiv:', await beehiivResponse.text());
+        } else {
+          console.log(`Успішно відправлено в Beehiiv: ${email}, Країна: ${country}`);
+        }
+      } catch (beehiivErr) {
+        console.error('Мережева помилка Beehiiv:', beehiivErr.message);
+      }
+    } else {
+      console.warn('Пропущено відправку в Beehiiv: немає ключів у Railway Variables');
+    }
+
+    // Віддаємо успішну відповідь на фронтенд (щоб показалась зелена галочка)
+    res.json(result);
+
+  } catch (error) {
+    console.error('Помилка збереження петиції:', error);
+    res.status(500).json({ error: 'Failed to save petition' });
+  }
 });
 
 // --- КОНТЕНТ ---
