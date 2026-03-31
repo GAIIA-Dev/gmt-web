@@ -90,7 +90,7 @@ app.post('/api/petitions', async (req, res) => {
         custom_fields: [
           { name: "First Name", value: firstName },
           { name: "Last Name", value: lastName },
-          { name: "Country", value: country } // Передаємо країну!
+          { name: "Location", value: country } // !
         ]
       };
 
